@@ -1,14 +1,13 @@
 #!/bin/bash
 
-# Set environment variables
-AZUREPAT=$AZUREPAT
-AZUSERNAME=$AZUSERNAME
-AZUSER_EMAIL=$AZUSER_EMAIL
-AZORG=$AZORG
+# Ensure environment variables are set
+if [ -z "$AZUREPAT" ] || [ -z "$AZUSERNAME" ] || [ -z "$AZUSER_EMAIL" ] || [ -z "$AZORG" ]; then
+  echo "Error: AZUREPAT, AZUSERNAME, AZUSER_EMAIL, and AZORG environment variables must be set."
+  exit 1
+fi
 
-# Clone the GitHub repository
 echo "Cloning GitHub repository..."
-git clone https://github.com/dadapunk/js-e2e-express-server
+git clone https://github.com/dadapunk/js-e2e-express-server.git
 if [ $? -ne 0 ]; then
   echo "Failed to clone GitHub repository"
   exit 1
@@ -18,8 +17,8 @@ cd js-e2e-express-server
 rm -rf .git
 cd ..
 
-# Clone the Azure repository
-GIT_CMD_REPOSITORY="https://$AZUSERNAME:$AZUREPAT@dev.azure.com/irep-tech/Github%20Integration%20test/_git/Github%20Integration%20test"
+# Clone the Azure repository using PAT
+GIT_CMD_REPOSITORY="GIT_CMD_REPOSITORY="https://$AZUSERNAME:$AZUREPAT@dev.azure.com/irep-tech/Github%20Integration%20test/_git/Github%20Integration%20test""
 echo "Cloning Azure repository..."
 git clone $GIT_CMD_REPOSITORY
 if [ $? -ne 0 ]; then
@@ -29,14 +28,14 @@ fi
 
 # Copy files from GitHub repository to Azure repository
 echo "Copying files..."
-cp -r js-e2e-express-server/* Github\ Integration\ test/
+cp -r js-e2e-express-server/* "Github Integration test/"
 if [ $? -ne 0 ]; then
   echo "Failed to copy files"
   exit 1
 fi
 
 # Change to the Azure repository directory
-cd Github\ Integration\ test
+cd TestGitSync
 
 # Configure Git user
 echo "Configuring Git user..."

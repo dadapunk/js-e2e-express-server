@@ -1,26 +1,96 @@
-name: CI
+name: Push directory to another repository
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: push
 
 jobs:
-  build:
+  check-bats-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up environment variables
+      - uses: actions/checkout@v2
+      - name: Verify commit.sh presence
+        run: ls -la ./commit.sh
+      - name: Run script file
+        env:
+          AZUREPAT: ${{ secrets.AZUREPAT }}
+          AZUSERNAME: ${{ secrets.AZUSERNAME }}
+          AZUSER_EMAIL: ${{ secrets.AZUSER_EMAIL }}
+          AZORG: ${{ secrets.AZORG }}
         run: |
-          echo "AZUREPAT=${{ secrets.AZUREPAT }}" >> $GITHUB_ENV
-          echo "AZUSERNAME=${{ secrets.AZUSERNAME }}" >> $GITHUB_ENV
-
-      - name: Run commit.sh
-        run: |
-          chmod +x commit.sh
+          echo "Making commit.sh executable..."
+          chmod +x ./commit.sh
+          echo "Running commit.sh..."
           ./commit.sh
+        shell: bash
+
+  push-to-azure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push directory to another repository
+        run: |
+          #!/bin/bash
+
+          # Ensure environment variables are set
+          if [ -z "$AZUREPAT" ] || [ -z "$AZUSERNAME" ] || [ -z "$AZUSER_EMAIL" ] || [ -z "$AZORG" ]; then
+            echo "Error: AZUREPAT, AZUSERNAME, AZUSER_EMAIL, and AZORG environment variables must be set."
+            exit 1
+          fi
+
+          echo "Cloning GitHub repository..."
+          git clone https://github.com/harishlalwani/testAzureDevops
+          if [ $? -ne 0 ]; then
+            echo "Failed to clone GitHub repository"
+            exit 1
+          fi
+
+          cd testAzureDevops
+          rm -rf .git
+          cd ..
+
+          # Clone the Azure repository using PAT
+          GIT_CMD_REPOSITORY="https://$AZUSERNAME:$AZUREPAT@dev.azure.com/$AZORG/TestGitSync/_git/TestGitSync"
+          echo "Cloning Azure repository..."
+          git clone $GIT_CMD_REPOSITORY
+          if [ $? -ne 0 ]; then
+            echo "Failed to clone Azure repository"
+            exit 1
+          fi
+
+          # Copy files from GitHub repository to Azure repository
+          echo "Copying files..."
+          cp -r testAzureDevops/* TestGitSync/
+          if [ $? -ne 0 ]; then
+            echo "Failed to copy files"
+            exit 1
+          fi
+
+          # Change to the Azure repository directory
+          cd TestGitSync
+
+          # Configure Git user
+          echo "Configuring Git user..."
+          git config --global user.email "$AZUSER_EMAIL"
+          git config --global user.name "$AZUSERNAME"
+
+          # Add, commit, and push changes
+          echo "Adding files to Git..."
+          git add .
+          if [ $? -ne 0 ]; then
+            echo "Failed to add files to Git"
+            exit 1
+          fi
+
+          echo "Committing changes..."
+          git commit -m "sync from git to azure"
+          if [ $? -ne 0 ]; then
+            echo "Failed to commit changes"
+            exit 1
+          fi
+
+          echo "Pushing changes to Azure repository..."
+          git push
+          if [ $? -ne 0 ]; then
+            echo "Failed to push changes"
+            exit 1
+          fi
+
+          echo "Script completed successfully"
