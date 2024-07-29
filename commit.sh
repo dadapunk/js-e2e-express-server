@@ -11,7 +11,7 @@ cd ..
 GIT_CMD_REPOSITORY="https://irep-tech@dev.azure.com/irep-tech/Github%20Integration%20test/_git/Github%20Integration%20test"
 git clone $GIT_CMD_REPOSITORY
 
-cp -r testAzureDevops/* js-e2e-express-server/
+cp -r js-e2e-express-server/* js-e2e-express-server/
 
 cd js-e2e-express-server
 
