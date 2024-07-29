@@ -1,0 +1,25 @@
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x' # Specify the Node.js version you want to use
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+    npm test
+  displayName: 'npm install, build, and test'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/TEST-*.xml'
+  displayName: 'Publish Test Results'
