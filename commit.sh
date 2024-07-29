@@ -37,7 +37,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Change to the Azure repository directory
-cd TestGitSync
+cd Github Integration test
 
 # Configure Git user
 echo "Configuring Git user..."
