@@ -26,6 +26,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Create the target directory if it does not exist
+mkdir -p "Github Integration test"
 # Copy files from GitHub repository to Azure repository
 echo "Copying files..."
 cp -r js-e2e-express-server/* "Github Integration test/"
