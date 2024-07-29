@@ -18,7 +18,7 @@ rm -rf .git
 cd ..
 
 # Clone the Azure repository using PAT
-GIT_CMD_REPOSITORY="GIT_CMD_REPOSITORY="https://$AZUSERNAME:$AZUREPAT@dev.azure.com/irep-tech/Github%20Integration%20test/_git/Github%20Integration%20test""
+GIT_CMD_REPOSITORY="GIT_CMD_REPOSITORY="GIT_CMD_REPOSITORY="https://$AZUSERNAME:$AZUREPAT@dev.azure.com/irep-tech/Github%20Integration%20test/_git/Github%20Integration%20test""
 echo "Cloning Azure repository..."
 git clone $GIT_CMD_REPOSITORY
 if [ $? -ne 0 ]; then
