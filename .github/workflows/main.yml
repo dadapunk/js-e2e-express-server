@@ -1,22 +1,16 @@
-name: Push directory to another repository
-on: push
 jobs:
-  check-bats-version:
+  build:
     runs-on: ubuntu-latest
-    environment: AzurePAT
     steps:
-      - uses: actions/checkout@v2
-      - name: Verify commit.sh presence
-        run: ls -la ./commit.sh
-      - name: Run script file
-        env:
-          AZUREPAT: ${{secrets.AZUREPAT}}
-          AZUSERNAME: ${{secrets.AZUSERNAME}}
-          AZUSER_EMAIL: ${{secrets.AZUSER_EMAIL}}
-          AZORG: ${{secrets.AZORG}}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up environment variables
         run: |
-          echo "Making commit.sh executable..."
-          chmod +x ./commit.sh
-          echo "Running commit.sh..."
+          echo "AZUREPAT=${{ secrets.AZUREPAT }}" >> $GITHUB_ENV
+          echo "AZUSERNAME=${{ secrets.AZUSERNAME }}" >> $GITHUB_ENV
+
+      - name: Run commit.sh
+        run: |
+          chmod +x commit.sh
           ./commit.sh
-        shell: bash
