@@ -15,6 +15,8 @@ jobs:
           AZUSER_EMAIL: ${{secrets.AZUSER_EMAIL}}
           AZORG: ${{secrets.AZORG}}
         run: |
+          echo "Making commit.sh executable..."
           chmod +x ./commit.sh
+          echo "Running commit.sh..."
           ./commit.sh
         shell: bash
