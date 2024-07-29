@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Ensure environment variables are set
 if [ -z "$AZUREPAT" ] || [ -z "$AZUSERNAME" ] || [ -z "$AZUSER_EMAIL" ] || [ -z "$AZORG" ]; then
   echo "Error: AZUREPAT, AZUSERNAME, AZUSER_EMAIL, and AZORG environment variables must be set."
@@ -28,6 +27,7 @@ fi
 
 # Create the target directory if it does not exist
 mkdir -p "Github Integration test"
+
 # Copy files from GitHub repository to Azure repository
 echo "Copying files..."
 cp -r js-e2e-express-server/* "Github Integration test/"
@@ -43,6 +43,10 @@ cd "Github Integration test"
 echo "Configuring Git user..."
 git config --global user.email "$AZUSER_EMAIL"
 git config --global user.name "$AZUSERNAME"
+
+# Check the status of the repository
+echo "Checking Git status..."
+git status
 
 # Add, commit, and push changes
 echo "Adding files to Git..."
@@ -62,8 +66,6 @@ fi
 echo "Pushing changes to Azure repository..."
 git push
 if [ $? -ne 0 ]; then
-  echo "Failed to push changes"
+  echo "Failed to push changes to Azure repository"
   exit 1
 fi
-
-echo "Script completed successfully"
